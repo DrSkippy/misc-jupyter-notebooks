@@ -1,0 +1,44 @@
+gamma:
+  mode_days: 7.0
+  median_days: 45.0
+  # solved parameters (populated by fit_gamma_params; set here after first run)
+  shape_k: null
+  scale_theta: null
+
+simulation:
+  cohort_sizes: [20, 50, 100, 250]
+  n_simulations: 5000
+  random_seed: 42
+  never_traffic_fraction: 0.01
+  never_traffic_days: 400.0
+
+scenarios:
+  baseline:
+    label: "Baseline"
+    theta_multiplier: 1.0
+  high_performing:
+    label: "High-Performing"
+    theta_multiplier: 0.5
+  low_performing:
+    label: "Low-Performing"
+    theta_multiplier: 2.0
+  mixed:
+    label: "Mixed (Bimodal)"
+    fast_fraction: 0.70
+    fast_theta_multiplier: 0.4
+    slow_theta_multiplier: 3.0
+
+growth:
+  model: "exponential"   # "linear" or "exponential"
+  n_months: 96 
+  days_per_month: 30
+  variation: 0.10        # ±fraction random noise applied to each month's rate
+  linear:
+    start_rate: 20       # entities/month at month 1
+    end_rate: 60         # entities/month at month n_months
+  exponential:
+    initial_rate: 1000   # entities/month at month 1
+    monthly_rate: -0.05  # fractional increase per month (e.g. 0.05 = 5%/month)
+
+output:
+  directory: "output"
