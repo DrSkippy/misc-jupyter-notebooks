@@ -47,12 +47,34 @@ poetry run pytest test/
 
 ## Running the notebooks
 
-The standalone notebooks have no shared environment file. Typical dependencies are `numpy`, `scipy`, `pandas`, `matplotlib` and `seaborn`:
+### JupyterLab in Docker (recommended)
+
+Mount the repo into the stock `datascience-notebook` image; it already has everything the notebooks need (numpy, scipy, pandas, matplotlib, seaborn, PyYAML, requests, R kernel):
+
+```yaml
+services:
+  jupyter:
+    image: quay.io/jupyter/datascience-notebook:latest
+    ports:
+      - 8899:8888
+    volumes:
+      - /path/to/misc-jupyter-notebooks:/home/jovyan/work
+    command: start-notebook.py --NotebookApp.token=${NOTEBOOK_TOKEN}
+    restart: unless-stopped
+```
+
+Then open <http://localhost:8899> and browse to `work/`. Notebooks that import a local package (`lane_queues`, `time_to_traffic_sim`) add it to `sys.path` themselves, so no install step or `PYTHONPATH` is needed. Only a notebook's own folder (or the repo root) needs to be the working directory, which is the default.
+
+### Locally
+
+The standalone notebooks have no shared environment file:
 
 ```bash
 pip install jupyter numpy scipy pandas matplotlib seaborn
 jupyter notebook
 ```
+
+The subprojects each have a Poetry environment; see their sections above.
 
 ## License
 
