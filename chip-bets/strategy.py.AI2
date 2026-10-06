@@ -1,0 +1,144 @@
+""" AI2: track the bags, budget the chips, buy while information pays.
+
+    Three ideas on top of AI1:
+
+    1. Track the bags. The bank change after each bet says whether the bet
+       won, which says which bag that session used, so the chips bought in
+       that session can be removed from the right bag's count. The
+       posterior is then exact (hypergeometric) for the bags' current
+       contents.
+
+    2. Budget the chips. Each bag has a fixed number of chips for all the
+       sessions still to come, and an empty bag ends a session with no bet.
+       The per-session chip cap is the remaining chips in the scarcer bag
+       divided by a high estimate of how many sessions that bag will be
+       drawn for, so chips not used early roll forward to later sessions.
+
+    3. Buy only while it pays. With Kelly betting, the expected log growth
+       of a session at win probability p is ln 2 + p ln p + (1-p) ln(1-p).
+       Buy another chip when the expected gain in that growth beats the
+       chip's cost in log terms, -ln(1 - chip_cost / bank).
+
+    Bets are the Kelly fraction 2p - 1, capped at `max_frac` of the bank.
+    For the first `warmup_sessions` sessions the bet is scaled by
+    `warmup_mult` (half Kelly): while the bank is small, one early loss at
+    full Kelly can set the whole contest back.
+
+    State lives in module globals and resets when session 0 starts.
+
+    kwargs (for parameter searches): max_frac, kelly_mult, budget_z,
+        warmup_sessions, warmup_mult
+"""
+from sim_parameters import *
+import math
+
+N_SESSIONS = 100
+
+_state = {}
+
+
+def _reset():
+    _state.clear()
+    _state["bags"] = {"wd": {"w": n_wd_w, "r": n_wd_r},
+                      "rd": {"w": n_rd_w, "r": n_rd_r}}
+    _state["colors"] = []    # chips bought in the session being resolved
+    _state["bet"] = None     # (bank before bet, bet, bag bet on)
+    _state["p_wd"] = 0.5     # posterior when the session ended
+
+
+def _resolve_last_session(bank):
+    """Work out which bag the last session used and remove its chips."""
+    colors, placed = _state["colors"], _state["bet"]
+    if placed is not None:
+        bank_before, bet, bet_bag = placed
+        won = abs(bank - (bank_before + bet)) < abs(bank - (bank_before - bet))
+        other = "rd" if bet_bag == "wd" else "wd"
+        bag = bet_bag if won else other
+    else:
+        # no bet was placed (sim error); fall back to the likelier bag
+        bag = "wd" if _state["p_wd"] >= 0.5 else "rd"
+    for c in colors:
+        _state["bags"][bag][c] = max(0, _state["bags"][bag][c] - 1)
+    _state["colors"], _state["bet"] = [], None
+
+
+def _posterior_wd(colors):
+    """P(white dominant | colors drawn this session), 50/50 prior, exact counts."""
+    like = {}
+    for key, bag in _state["bags"].items():
+        n = dict(bag)
+        like[key] = 1.0
+        for c in colors:
+            total = n["w"] + n["r"]
+            like[key] *= n[c] / total if total else 0.0
+            n[c] = max(0, n[c] - 1)
+    total = like["wd"] + like["rd"]
+    return like["wd"] / total if total else 0.5
+
+
+def _growth(p, mult=1.0):
+    """Expected log growth of a bet of mult * Kelly with win probability max(p, 1-p)."""
+    p = max(p, 1 - p)
+    f = mult * (2 * p - 1)
+    if f >= 1:
+        return math.log(2)
+    return p * math.log(1 + f) + (1 - p) * math.log(1 - f)
+
+
+def _p_next_white(colors, p_wd):
+    """Predictive probability that the next chip bought is white."""
+    pw = 0.0
+    for key, weight in (("wd", p_wd), ("rd", 1 - p_wd)):
+        n = dict(_state["bags"][key])
+        for c in colors:
+            n[c] = max(0, n[c] - 1)
+        total = n["w"] + n["r"]
+        pw += weight * (n["w"] / total if total else 0.0)
+    return pw
+
+
+def _chip_cap(session, budget_z):
+    """Most chips this session can use without risking an empty bag later."""
+    sessions_left = N_SESSIONS - session
+    expected = sessions_left / 2
+    high = expected + budget_z * math.sqrt(sessions_left) / 2
+    remaining = min(b["w"] + b["r"] for b in _state["bags"].values())
+    return int(remaining / max(high, 1))
+
+
+def bet_strategy(session, bank, chip_color, session_history, **kwargs):
+    max_frac = kwargs.get("max_frac", 0.98)
+    kelly_mult = kwargs.get("kelly_mult", 1.0)
+    warmup_sessions = kwargs.get("warmup_sessions", 15)
+    warmup_mult = kwargs.get("warmup_mult", 0.5)
+    if session < warmup_sessions:
+        kelly_mult *= warmup_mult
+    budget_z = kwargs.get("budget_z", 1.0)
+
+    if session_history == []:
+        if session == 0 or not _state:
+            _reset()
+        else:
+            _resolve_last_session(bank)
+
+    colors = [h[3] for h in session_history if h[0] == "buy"]
+    _state["colors"] = colors
+    p_wd = _posterior_wd(colors)
+    _state["p_wd"] = p_wd
+
+    if len(colors) < _chip_cap(session, budget_z) and bank > chip_cost:
+        pw = _p_next_white(colors, p_wd)
+        gain = (pw * _growth(_posterior_wd(colors + ["w"]), kelly_mult)
+                + (1 - pw) * _growth(_posterior_wd(colors + ["r"]), kelly_mult)
+                - _growth(p_wd, kelly_mult))
+        cost = -math.log(1 - chip_cost / bank)
+        if gain > cost:
+            return "buy", 0, "ud"
+
+    p_best = max(p_wd, 1 - p_wd)
+    bet_bag = "wd" if p_wd >= 0.5 else "rd"
+    bet = int(min(max_frac, kelly_mult * (2 * p_best - 1)) * bank)
+    # sim requires bank > bet
+    bet = max(1, min(bet, math.ceil(bank) - 1))
+    _state["bet"] = (bank, bet, bet_bag)
+    return "bet", bet, bet_bag

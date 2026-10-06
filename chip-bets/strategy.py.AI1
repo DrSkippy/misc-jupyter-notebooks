@@ -1,0 +1,57 @@
+""" AI1: Bayesian sequential sampling with Kelly bet sizing.
+
+    Each session:
+      1. Buy chips one at a time and update P(bag is white dominant)
+         with Bayes' rule (drawing without replacement from the bags'
+         starting contents).
+      2. Stop buying once the more likely bag reaches `target`
+         probability, after `max_chips` chips, or when a chip would cost
+         more than `max_cost_frac` of the bank.
+      3. Bet the Kelly fraction 2p - 1 of the bank on the more likely bag,
+         where p is the probability that bag is the right one.
+
+    The chip price is fixed, so as the bank grows extra chips become
+    cheap and buy confidence, which lets the Kelly bet grow toward the
+    whole bank. Capping each session at 3 chips keeps total buys
+    (at most 300) from emptying either 200-chip bag.
+
+    Stateless: nothing is remembered between sessions.
+
+    kwargs (for parameter searches): target, max_chips, max_cost_frac, kelly_mult
+"""
+from sim_parameters import *
+import math
+
+
+def posterior_wd(colors):
+    """P(white dominant | colors drawn this session), 50/50 prior."""
+    like_wd, like_rd = 1.0, 1.0
+    wd = {"w": n_wd_w, "r": n_wd_r}
+    rd = {"w": n_rd_w, "r": n_rd_r}
+    for c in colors:
+        like_wd *= wd[c] / (wd["w"] + wd["r"])
+        like_rd *= rd[c] / (rd["w"] + rd["r"])
+        wd[c] -= 1
+        rd[c] -= 1
+    return like_wd / (like_wd + like_rd)
+
+
+def bet_strategy(session, bank, chip_color, session_history, **kwargs):
+    target = kwargs.get("target", 0.95)
+    max_chips = kwargs.get("max_chips", 3)
+    max_cost_frac = kwargs.get("max_cost_frac", 0.05)
+    kelly_mult = kwargs.get("kelly_mult", 1.0)
+
+    colors = [h[3] for h in session_history if h[0] == "buy"]
+    p_wd = posterior_wd(colors)
+    p_best = max(p_wd, 1 - p_wd)
+
+    if (p_best < target and len(colors) < max_chips
+            and bank > chip_cost and chip_cost <= max_cost_frac * bank):
+        return "buy", 0, "ud"
+
+    bet_bag = "wd" if p_wd >= 0.5 else "rd"
+    bet = int(kelly_mult * (2 * p_best - 1) * bank)
+    # sim requires bank > bet
+    bet = max(1, min(bet, math.ceil(bank) - 1))
+    return "bet", bet, bet_bag
