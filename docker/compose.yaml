@@ -1,0 +1,24 @@
+# JupyterLab for this repo. Run from this folder:  NOTEBOOK_TOKEN=... docker compose up -d
+# then open http://localhost:8899 and browse to work/.
+name: misc-jupyter-notebooks
+services:
+  jupyter:
+    # Stock image: every notebook runs on it as-is. The R course packages install from CRAN on first use.
+    image: quay.io/jupyter/datascience-notebook:latest
+    # Or build the image in ./Dockerfile instead (R course packages baked in, plus CuPy for the GPU):
+    # build: .
+    ports:
+      - 8899:8888
+    volumes:
+      - ..:/home/jovyan/work
+    command: start-notebook.py --IdentityProvider.token=${NOTEBOOK_TOKEN}
+    restart: unless-stopped
+    # GPU passthrough (needs the NVIDIA Container Toolkit on the host). Nothing here needs it by default; see
+    # "GPU" in the top-level README for when it helps.
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]

@@ -79,9 +79,13 @@ and compares them:
 * how each strategy plays a session: chips bought, bet size as a share of
   the bank, and accuracy.
 
-To include a new entry, save it as `strategy.py.<Name>` and rerun the
-notebook. It needs numpy, pandas, matplotlib, scipy (for Josh's entry) and
-jupyter, e.g.
+The contest engine the notebook uses is in `contest.py`: `run_contest(strategy, seed)` plays one
+contest with the same rules and random draws as `sim.get_bank` (the notebook checks they agree)
+and returns a per-session trace, and `run_seeds(seeds)` scores every submission on many seeds in
+parallel worker processes, one per CPU.
+
+To include a new entry, save it as `strategy.py.<Name>` and rerun the notebook. It needs numpy,
+pandas, matplotlib and scipy (for Josh's entry), all in the Jupyter datascience image; elsewhere e.g.
 
     uv run --with jupyter,matplotlib,pandas,numpy,scipy jupyter lab
 

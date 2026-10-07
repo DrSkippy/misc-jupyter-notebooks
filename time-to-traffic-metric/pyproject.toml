@@ -1,0 +1,29 @@
+[project]
+name = "time-to-traffic-sim"
+version = "0.2.0"
+description = "Monte Carlo simulation and metric analysis for time-to-first-traffic"
+authors = [{ name = "Scott", email = "scott@drskippy.net" }]
+requires-python = ">=3.11"
+dependencies = ["numpy", "scipy", "pandas", "matplotlib", "seaborn", "pyyaml"]
+
+[project.optional-dependencies]
+gpu = ["cupy-cuda12x[ctk]"]
+dev = ["pytest", "pytest-cov", "black", "mypy", "types-pyyaml", "pandas-stubs"]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["time_to_traffic_sim"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.black]
+line-length = 100
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true

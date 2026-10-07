@@ -1,0 +1,21 @@
+[project]
+name = "checkout-queues"
+version = "0.2.0"
+description = "Checkout-line queueing simulations: power of d choices, and one shared line vs a line per clerk"
+authors = [{ name = "DrSkippy", email = "scott@drskippy.net" }]
+requires-python = ">=3.11"
+dependencies = ["numpy", "pandas", "matplotlib"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["checkout_queues"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
