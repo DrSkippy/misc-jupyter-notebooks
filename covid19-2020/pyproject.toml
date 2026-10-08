@@ -1,0 +1,21 @@
+[project]
+name = "covid19-2020"
+version = "0.2.0"
+description = "Naive short-term projections of 2020 COVID-19 case growth: doubling times and SIR fits"
+authors = [{ name = "DrSkippy", email = "scott@drskippy.net" }]
+requires-python = ">=3.11"
+dependencies = ["numpy", "scipy", "pandas", "matplotlib", "seaborn"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["covid19"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
