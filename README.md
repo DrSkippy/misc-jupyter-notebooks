@@ -12,6 +12,7 @@ folder of its own.
 ├── causality-crash-course/    # R: matching, IPW and instrumental variables (course notebooks)
 ├── checkout-queues/           # checkout-line queueing simulations (package + 3 notebooks + tests)
 ├── chip-bets/                 # 2017 betting contest: simulator, submissions, comparison notebook
+├── coin-toss-patterns/        # waiting times for coin-toss patterns (package + notebook + tests)
 ├── covid19-2020/              # 2020 COVID-19 doubling times and SIR fits (package + 3 notebooks + tests)
 ├── time-to-traffic-metric/    # onboarding metric design (package + CLI + 4 notebooks + tests)
 └── docker/                    # compose file for JupyterLab, optional Dockerfile with extras
@@ -39,6 +40,7 @@ folder of its own.
 | [`causality-crash-course/`](causality-crash-course/README.md) | R notebooks for *A Crash Course in Causality*: matching, IPW and MSMs, instrumental variables, and three data projects on the Lalonde data |
 | [`checkout-queues/`](checkout-queues/README.md) | Power of d choices (join the shortest of d lines) and one shared line vs a line per clerk |
 | [`chip-bets/`](chip-bets/README.md) | Guess-the-bag betting contest: the simulator, the submitted strategies, two AI strategies and a many-seed comparison |
+| [`coin-toss-patterns/`](coin-toss-patterns/README.md) | Tosses until a pattern like `HT` or `TTTH` first appears: simulation, and exact counts of sequences that avoid a pattern |
 | [`covid19-2020/`](covid19-2020/README.md) | COVID-19 in 2020: doubling times for US states and countries, testing rates, SIR fits to the first wave, and a 2020-04-01 talk (moved from the `2020covid19` repository) |
 | [`time-to-traffic-metric/`](time-to-traffic-metric/README.md) | Designing an onboarding health metric from days-to-first-traffic: gamma modeling, Monte Carlo cohorts, monthly metrics |
 
@@ -56,7 +58,7 @@ NOTEBOOK_TOKEN=choose-a-token docker compose up -d
 
 Then open <http://localhost:8899> and browse to `work/`. The compose file mounts the repo at `/home/jovyan/work`.
 
-- Notebooks that use a project package (`checkout_queues`, `covid19`, `time_to_traffic_sim`, `chip-bets`' modules) add their
+- Notebooks that use a project package (`checkout_queues`, `coin_toss_patterns`, `covid19`, `time_to_traffic_sim`, `chip-bets`' modules) add their
   project folder to `sys.path` themselves, so there is nothing to install. Jupyter starts each kernel in the
   notebook's own folder, which is all they rely on.
 - The R notebooks install the few course packages they need from CRAN on first use in a fresh container.
@@ -75,7 +77,7 @@ The R notebooks additionally need R with the IRkernel.
 ### Tests
 
 The Python packages have pytest suites. pytest is not in the Jupyter image, so `pip install pytest` first, then
-run `python -m pytest` in `checkout-queues/`, `covid19-2020/` or `time-to-traffic-metric/`.
+run `python -m pytest` in `checkout-queues/`, `coin-toss-patterns/`, `covid19-2020/` or `time-to-traffic-metric/`.
 
 ## Conventions
 
