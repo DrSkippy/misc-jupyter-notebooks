@@ -211,3 +211,7 @@ causality-crash-course/data/rhc.sav
 
 # Contest debug log written by chip-bets/sim.py
 session.log
+
+# Local clutter: desktop trash folder and chat scratch file
+.Trash-1000/
+untitled.chat
