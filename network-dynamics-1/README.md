@@ -30,7 +30,8 @@ The notebook adds the project folder to `sys.path` itself, so nothing needs inst
 - The largest component follows the theory, S = 1 − e^(−cS) for mean degree c > 1. With 1,000 nodes it holds
   20% of the nodes at c = 1, 79% at c = 2 and all of them by c ≈ 10. The second largest component peaks near
   c = 1 at about 40 nodes.
-- Degrees are Poisson: at c = 10 no node has more than 20 links. Random graphs have no hubs.
+- Degrees are Poisson: at c = 10 the best-connected node has about 22 links (20 in the 2000s run). Random graphs
+  have no hubs.
 - Clustering is c / (n − 1), 1% at c = 10 with 1,000 nodes, far below that of social networks.
 - The transition sharpens with size. At c = 1 the largest component is about n^(2/3) nodes (0.8 to 1.0 times it, from
   100 to 1,000,000 nodes), so its share of the network falls from 20% to 1%.
