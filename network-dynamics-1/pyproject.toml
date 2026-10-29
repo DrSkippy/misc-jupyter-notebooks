@@ -1,0 +1,21 @@
+[project]
+name = "network-dynamics"
+version = "0.2.0"
+description = "A random network grown a batch of links at a time: degrees, components, clustering and the giant component"
+authors = [{ name = "DrSkippy", email = "scott@drskippy.net" }]
+requires-python = ">=3.11"
+dependencies = ["numpy", "scipy", "pandas", "matplotlib"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["network_dynamics"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

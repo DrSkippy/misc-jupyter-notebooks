@@ -16,6 +16,7 @@ folder of its own.
 ├── coin-toss-patterns/        # waiting times for coin-toss patterns (package + notebook + tests)
 ├── covid19-2020/              # 2020 COVID-19 doubling times and SIR fits (package + 3 notebooks + tests)
 ├── iter-prisoners-dilemma/    # iterated prisoner's dilemma strategy comparison (package + 2 notebooks + tests)
+├── network-dynamics-1/        # random network growth and the giant component (package + notebook + tests)
 ├── time-to-traffic-metric/    # onboarding metric design (package + CLI + 4 notebooks + tests)
 └── docker/                    # compose file for JupyterLab, optional Dockerfile with extras
 ```
@@ -46,6 +47,7 @@ folder of its own.
 | [`coin-toss-patterns/`](coin-toss-patterns/README.md) | Tosses until a pattern like `HT` or `TTTH` first appears: simulation, and exact counts of sequences that avoid a pattern |
 | [`covid19-2020/`](covid19-2020/README.md) | COVID-19 in 2020: doubling times for US states and countries, testing rates, SIR fits to the first wave, and a 2020-04-01 talk (moved from the `2020covid19` repository) |
 | [`iter-prisoners-dilemma/`](iter-prisoners-dilemma/README.md) | Iterated prisoner's dilemma: round-robin comparison of twelve strategies, the effect of mistakes, and a 2008 population experiment replayed |
+| [`network-dynamics-1/`](network-dynamics-1/README.md) | A random network grown a batch of links at a time: the giant component appearing at mean degree 1, Poisson degrees, clustering, and the critical point |
 | [`time-to-traffic-metric/`](time-to-traffic-metric/README.md) | Designing an onboarding health metric from days-to-first-traffic: gamma modeling, Monte Carlo cohorts, monthly metrics |
 
 ## Running the notebooks
@@ -62,7 +64,7 @@ NOTEBOOK_TOKEN=choose-a-token docker compose up -d
 
 Then open <http://localhost:8899> and browse to `work/`. The compose file mounts the repo at `/home/jovyan/work`.
 
-- Notebooks that use a project package (`negotiations`, `checkout_queues`, `coin_toss_patterns`, `covid19`, `prisoners_dilemma`, `time_to_traffic_sim`, `chip-bets`' modules) add their
+- Notebooks that use a project package (`negotiations`, `checkout_queues`, `coin_toss_patterns`, `covid19`, `prisoners_dilemma`, `network_dynamics`, `time_to_traffic_sim`, `chip-bets`' modules) add their
   project folder to `sys.path` themselves, so there is nothing to install. Jupyter starts each kernel in the
   notebook's own folder, which is all they rely on.
 - The R notebooks install the few course packages they need from CRAN on first use in a fresh container.
@@ -81,7 +83,7 @@ The R notebooks additionally need R with the IRkernel.
 ### Tests
 
 The Python packages have pytest suites. pytest is not in the Jupyter image, so `pip install pytest` first, then
-run `python -m pytest` in `applied-game-scenario/`, `checkout-queues/`, `coin-toss-patterns/`, `covid19-2020/`, `iter-prisoners-dilemma/` or
+run `python -m pytest` in `applied-game-scenario/`, `checkout-queues/`, `coin-toss-patterns/`, `covid19-2020/`, `iter-prisoners-dilemma/`, `network-dynamics-1/` or
 `time-to-traffic-metric/`.
 
 ## Conventions
