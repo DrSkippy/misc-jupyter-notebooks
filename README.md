@@ -9,6 +9,7 @@ folder of its own.
 ```
 .
 ├── *.ipynb                    # standalone notebooks (table below)
+├── applied-game-scenario/     # multi-party negotiation outcomes and coalitions (package + notebook + tests)
 ├── causality-crash-course/    # R: matching, IPW and instrumental variables (course notebooks)
 ├── checkout-queues/           # checkout-line queueing simulations (package + 3 notebooks + tests)
 ├── chip-bets/                 # 2017 betting contest: simulator, submissions, comparison notebook
@@ -38,6 +39,7 @@ folder of its own.
 
 | Folder | Contents |
 |---|---|
+| [`applied-game-scenario/`](applied-game-scenario/README.md) | Predicting a multi-party negotiation from position, influence and salience (a 2009 spreadsheet), and how far coalitions formed beforehand can move the outcome |
 | [`causality-crash-course/`](causality-crash-course/README.md) | R notebooks for *A Crash Course in Causality*: matching, IPW and MSMs, instrumental variables, and three data projects on the Lalonde data |
 | [`checkout-queues/`](checkout-queues/README.md) | Power of d choices (join the shortest of d lines) and one shared line vs a line per clerk |
 | [`chip-bets/`](chip-bets/README.md) | Guess-the-bag betting contest: the simulator, the submitted strategies, two AI strategies and a many-seed comparison |
@@ -60,7 +62,7 @@ NOTEBOOK_TOKEN=choose-a-token docker compose up -d
 
 Then open <http://localhost:8899> and browse to `work/`. The compose file mounts the repo at `/home/jovyan/work`.
 
-- Notebooks that use a project package (`checkout_queues`, `coin_toss_patterns`, `covid19`, `prisoners_dilemma`, `time_to_traffic_sim`, `chip-bets`' modules) add their
+- Notebooks that use a project package (`negotiations`, `checkout_queues`, `coin_toss_patterns`, `covid19`, `prisoners_dilemma`, `time_to_traffic_sim`, `chip-bets`' modules) add their
   project folder to `sys.path` themselves, so there is nothing to install. Jupyter starts each kernel in the
   notebook's own folder, which is all they rely on.
 - The R notebooks install the few course packages they need from CRAN on first use in a fresh container.
@@ -79,7 +81,7 @@ The R notebooks additionally need R with the IRkernel.
 ### Tests
 
 The Python packages have pytest suites. pytest is not in the Jupyter image, so `pip install pytest` first, then
-run `python -m pytest` in `checkout-queues/`, `coin-toss-patterns/`, `covid19-2020/`, `iter-prisoners-dilemma/` or
+run `python -m pytest` in `applied-game-scenario/`, `checkout-queues/`, `coin-toss-patterns/`, `covid19-2020/`, `iter-prisoners-dilemma/` or
 `time-to-traffic-metric/`.
 
 ## Conventions

@@ -1,0 +1,21 @@
+[project]
+name = "negotiations"
+version = "0.2.0"
+description = "Predicting multi-party negotiation outcomes: the salience x influence weighted average, coalitions and negotiations in succession"
+authors = [{ name = "DrSkippy", email = "scott@drskippy.net" }]
+requires-python = ">=3.11"
+dependencies = ["numpy", "pandas", "matplotlib"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["negotiations"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
